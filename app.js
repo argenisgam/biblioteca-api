@@ -6,7 +6,7 @@ const corsMiddleware = require("./middlewares/corsMiddleware");
 app.use(corsMiddleware);
 
 const PORT = 3000;
-const pool = require('./config/db');
+//const pool = require('./config/db');
 const usuarioRoutes=require('./routes/usuarios.routes');
 const libroRoutes=require('./routes/libro.routes');
 const prestamoRoutes=require('./routes/prestamo.routes');
@@ -21,8 +21,8 @@ app.use(handleError);
 app.use(express.json());
 app.use(logger.logger);
 
-app.use('/usuarios',usuarioRoutes);
-app.use('/libros',libroRoutes);
+app.use('/usuarios', authenticate(),usuarioRoutes);
+app.use('/libros',authenticate(),libroRoutes);
 app.use('/prestamos',prestamoRoutes);
 app.use('/auth',authRoutes);
 app.use("/roles", rolRoutes);

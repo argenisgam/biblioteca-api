@@ -23,7 +23,6 @@ const login = async ({ email, password }) => {
   const permisos = user.Rol.Permisos.map((permiso) => permiso.nombre);
   return token.generateToken({
     id: user.id,
-    username: user.username,
     rol: user.Rol.nombre,
     permisos
   });
