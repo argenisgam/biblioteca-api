@@ -2,8 +2,8 @@ const prestamoModel=require('../models/prestamo.model');
 const usuarioModel=require('../models/usuarios.models');
 const libroModel=require('../models/libro.model');
 const {Usuario,Prestamo,Libro}=require('../models');
-const{BussinessError, SystemError}=require('../errors');
-
+const BusinessError = require('../errors/BusinessError');
+const SystemError = require('../errors/SystemError');
 exports.getAll=async()=>{
     return await Prestamo.findAll({
         include:[
@@ -41,16 +41,16 @@ exports.getById=async(id)=>{
 exports.create=async(prestamo)=>{
     const usuario=await Usuario.findByPk(prestamo.usuario_id);
     if(!usuario){
-        throw new BussinessError("El usuario no existe");
+        throw new BusinessError("El usuario no existe");
     }
     const libro =await Libro.findByPk(prestamo.libro_id);
     if(!libro){
-          throw new BussinessError("El libro no existe");
+          throw new BusinessError("El libro no existe");
       
     }
 
     if(await libroPrestado(prestamo.libro_id)){
-         throw new BussinessError("El libro está prestado");
+         throw new BusinessError("El libro está prestado");
 
     }
     return await Prestamo.create(prestamo); 

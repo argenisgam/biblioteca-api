@@ -21,8 +21,8 @@ app.use(handleError);
 app.use(express.json());
 app.use(logger.logger);
 
-app.use('/usuarios', authenticate(),usuarioRoutes);
-app.use('/libros',authenticate(),libroRoutes);
+app.use('/usuarios',usuarioRoutes);
+app.use('/libros',libroRoutes);
 app.use('/prestamos',prestamoRoutes);
 app.use('/auth',authRoutes);
 app.use("/roles", rolRoutes);

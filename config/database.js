@@ -1,21 +1,22 @@
 const { Sequelize } = require("sequelize");
-require('dotenv').config();
-console.log(__dirname);
-console.log(process.cwd());
+require("dotenv").config();
+
 const sequelize = new Sequelize(
-process.env.DB_DATABASE, // Base de datos
-process.env.DB_USER, // Usuario
-process.env.DB_PASSWORD, // Contraseña
-{
-host: process.env.DB_HOST,
-dialect: process.env.DB_DIALECT,
-logging: false,
-dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
+    process.env.DB_DATABASE,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+        host: process.env.DB_HOST,
+        port: 5432,
+        dialect: "postgres",
+        logging: false,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        }
     }
-}
 );
+
 module.exports = sequelize;

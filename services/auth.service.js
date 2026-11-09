@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Rol= require("../models/Rol")
 const Permiso= require("../models/Permiso")
-const bussinessError= requiere("../errors/BusinessError")
+const BusinessError = require('../errors/BusinessError');
 const unauthorizedError= require("../errors/UnauthorizedError")
 const token=require("../utils/jwt");
 const login = async ({ email, password }) => {
