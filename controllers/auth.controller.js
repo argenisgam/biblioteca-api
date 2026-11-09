@@ -10,7 +10,7 @@ try{
      console.error("Mensaje:", err.message);
 
       if (err.parent) {
-          console.error("Postgres:", err.parent.message);
+          console.error("Base de datos:", err.parent.message);
       }
 
       if (err.original) {

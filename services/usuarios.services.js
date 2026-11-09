@@ -1,5 +1,4 @@
 const Usuario=require('../models/Usuarios');
-const lib = require('pg-hstore');
 
 
 exports.getAll = async ()=>{

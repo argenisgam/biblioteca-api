@@ -1,21 +1,17 @@
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
+// PostgreSQL anterior: dialect: "postgres", port: 5432 y SSL de Neon.
+// Se conserva como referencia mientras la aplicación usa MySQL.
 const sequelize = new Sequelize(
     process.env.DB_DATABASE,
     process.env.DB_USER,
     process.env.DB_PASSWORD,
     {
         host: process.env.DB_HOST,
-        port: 5432,
-        dialect: "postgres",
-        logging: false,
-        dialectOptions: {
-            ssl: {
-                require: true,
-                rejectUnauthorized: false
-            }
-        }
+        port: Number(process.env.DB_PORT || 3306),
+        dialect: process.env.DB_DIALECT || "mysql",
+        logging: false
     }
 );
 

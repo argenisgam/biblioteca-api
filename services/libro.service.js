@@ -1,5 +1,4 @@
 const Libro=require('../models/Libro');
-const lib = require('pg-hstore');
 
 
 exports.getAll=async()=>{

@@ -5,8 +5,7 @@ const app = express();
 const corsMiddleware = require("./middlewares/corsMiddleware");
 app.use(corsMiddleware);
 
-const PORT = 3000;
-//const pool = require('./config/db');
+const PORT = process.env.PORT || 3000;
 const usuarioRoutes=require('./routes/usuarios.routes');
 const libroRoutes=require('./routes/libro.routes');
 const prestamoRoutes=require('./routes/prestamo.routes');

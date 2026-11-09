@@ -4,48 +4,45 @@ exports.getAll = async() => {
     const resultado = await pool.query(
      'SELECT * FROM usuarios ORDER BY id'
     );
-    return resultado.rows;
+    return resultado[0];
 };
 exports.getById = async(id) => {
     const resultado = await pool.query(
-     'SELECT * FROM usuarios WHERE id=$1',
+     'SELECT * FROM usuarios WHERE id=?',
      [id]
     );
-    return resultado.rows[0];
+    return resultado[0][0];
 };
 
 
 exports.create = async (usuario)=>{
 const resultado = await pool.query(
     `INSERT INTO usuarios(nombre,correo)
-    VALUES($1,$2)
-    RETURNING *`,
+    VALUES(?,?)`,
     [usuario.nombre,usuario.correo]
     );
-    return resultado.rows[0];
+    return { id: resultado[0].insertId, ...usuario };
 };
 
 exports.update = async(id,usuario)=>{
     const resultado = await pool.query(
         `UPDATE usuarios
-         SET nombre=$1,
-             correo=$2
-         WHERE id=$3
-         RETURNING *`,
+         SET nombre=?,
+             correo=?
+         WHERE id=?`,
         [
             usuario.nombre,
             usuario.correo,
             id
         ]
     );
-    return resultado.rows[0];
+    return resultado[0].affectedRows ? { id: Number(id), ...usuario } : null;
 };
 
 exports.delete = async(id)=>{
     const resultado=await pool.query(
-        `DELETE FROM usuarios WHERE id=$1
-        RETURNING *`,
+        `DELETE FROM usuarios WHERE id=?`,
         [id]
     );
-    return resultado.rows[0];
+    return resultado[0].affectedRows ? { id: Number(id) } : null;
 };

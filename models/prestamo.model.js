@@ -13,7 +13,7 @@ exports.getAll=async()=>{
             ON P.LIBRO_ID=L.ID
         `
     );
-    return resultado.rows;
+    return resultado[0];
 }
 exports.getById=async(id)=>{
     const resultado= await pool.query(
@@ -27,41 +27,39 @@ exports.getById=async(id)=>{
             ON P.USUARIO_ID=U.ID
             INNER JOIN LIBROS L
             ON P.LIBRO_ID=L.ID
-            WHERE P.ID=$1
+            WHERE P.ID=?
         `,
         [id]
     );
-    return resultado.rows[0];
+    return resultado[0][0];
 }
 
 exports.libroPrestado = async(idLibro)=>{
     const resultado = await pool.query(
         `SELECT *
         FROM prestamos
-        WHERE libro_id=$1
+        WHERE libro_id=?
         AND fecha_devolucion IS NULL`,
         [idLibro]
     );
-    return resultado.rows.length>0;
+    return resultado[0].length > 0;
 };
 
 exports.create = async (prestamo)=>{
 const resultado = await pool.query(
     `INSERT INTO prestamos(usuario_id,libro_id,fecha_prestamo)
-    VALUES($1,$2,CURRENT_DATE)
-    RETURNING *`,
+    VALUES(?,?,CURRENT_DATE)`,
     [prestamo.usuario_id,prestamo.libro_id]
     );
-    return resultado.rows[0];
+    return { id: resultado[0].insertId, ...prestamo };
 };
 
 exports.devolver=async(id)=>{
     const resultado=await pool.query(
         `UPDATE prestamos
         SET fecha_devolucion=CURRENT_DATE
-        WHERE id=$1
-        RETURNING *`,
+        WHERE id=?`,
         [id]
     );
-return resultado.rows[0];
+return resultado[0].affectedRows ? { id: Number(id) } : null;
 };
