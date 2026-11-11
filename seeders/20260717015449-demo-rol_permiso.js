@@ -1,57 +1,45 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
+const { PERMISSIONS } = require('../constants/permissions');
+
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
-    const permisos = await queryInterface.sequelize.query(
-      `SELECT id, nombre FROM permisos`,
+  async up(queryInterface, Sequelize) {
+    const permissions = await queryInterface.sequelize.query(
+      'SELECT id, nombre FROM permisos',
       { type: Sequelize.QueryTypes.SELECT }
     );
-
-    const relaciones = [];
-
-    // Administrador (id=1)
-    permisos.forEach((permiso) => {
-      relaciones.push({
-        rol_id: 1,
-        permiso_id: permiso.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    });
-
-    // Usuario (id=2)
-    const consultarUsuario = permisos.find(
-      (p) => p.nombre === "usuario.consultar"
+    const roles = await queryInterface.sequelize.query(
+      'SELECT id, nombre FROM roles',
+      { type: Sequelize.QueryTypes.SELECT }
     );
+    const adminRole = roles.find((role) => role.nombre === 'Administrador');
+    const userRole = roles.find((role) => role.nombre === 'Usuario');
+    const catalogPermission = permissions.find((permission) => permission.nombre === PERMISSIONS.BOOK_READ);
 
-    relaciones.push({
-      rol_id: 2,
-      permiso_id: consultarUsuario.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    if (!adminRole || !userRole || !catalogPermission) {
+      throw new Error('Primero crea los roles y permisos de biblioteca.');
+    }
 
-    await queryInterface.bulkInsert("rol_permisos", relaciones);
+    const now = new Date();
+    const relationships = [
+      ...permissions.map((permission) => ({
+        rol_id: adminRole.id,
+        permiso_id: permission.id,
+        createdAt: now,
+        updatedAt: now
+      })),
+      {
+        rol_id: userRole.id,
+        permiso_id: catalogPermission.id,
+        createdAt: now,
+        updatedAt: now
+      }
+    ];
+
+    await queryInterface.bulkInsert('rol_permisos', relationships);
   },
 
-  async down (queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
-        await queryInterface.bulkDelete("rol_permisos", null, {});
-
+  async down(queryInterface) {
+    await queryInterface.bulkDelete('rol_permisos', null, {});
   }
 };

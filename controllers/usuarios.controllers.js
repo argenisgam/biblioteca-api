@@ -15,7 +15,7 @@ exports.create = async(req,res,next)=>{
         const usuario = await usuarioService.create(req.body);
         res.status(201).json(usuario);
     }catch(error){
-        next();
+        next(error);
     }
 };
 

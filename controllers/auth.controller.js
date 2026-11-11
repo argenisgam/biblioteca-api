@@ -1,27 +1,31 @@
 const authService = require("../services/auth.service");
-const login = async (req, res) => {
-try{
-    const token = await authService.login(req.body);
-    res.status(200).json({
-      message: "Inicio de sesión exitoso",
-      token,
+const login = async (req, res, next) => {
+  try {
+    const session = await authService.login(req.body || {});
+    return res.status(200).json({
+      message: "Inicio de sesión exitoso.",
+      ...session
     });
-    }catch(err){
-     console.error("Mensaje:", err.message);
-
-      if (err.parent) {
-          console.error("Base de datos:", err.parent.message);
-      }
-
-      if (err.original) {
-          console.error("Original:", err.original.message);
-      }
-      res.status(500).json({
-            mensaje:error.message
-        });
-    }
-
+  } catch (error) {
+    return next(error);
+  }
 };
-module.exports = {
-  login,
+
+const register = async (req, res, next) => {
+  try {
+    const session = await authService.register(req.body || {});
+    return res.status(201).json({
+      message: "Cuenta creada correctamente.",
+      ...session
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
+
+const currentUser = (req, res) => {
+  const { id, username, email, rol, permisos } = req.user;
+  return res.json({ id, username, email, rol, permisos });
+};
+
+module.exports = { login, register, currentUser };

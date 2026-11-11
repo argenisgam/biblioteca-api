@@ -1,28 +1,18 @@
-const authorize = (requiredPermission) => {
+const authorize = (requiredPermissions = []) => {
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({
-                message: "Usuario no autenticado"
-            });
+            return res.status(401).json({ success: false, message: "Debe iniciar sesión." });
         }
 
-        const permisos = req.user.permisos || [];
+        const required = Array.isArray(requiredPermissions) ? requiredPermissions : [requiredPermissions];
+        const granted = Array.isArray(req.user.permisos) ? req.user.permisos : [];
+        if (required.length === 0) return next();
 
-        const tienePermiso = requiredPermission.some((permiso) =>
-            permisos.includes(permiso)
-        );
+        const tienePermiso = required.some((permiso) => granted.includes(permiso));
         if (!tienePermiso) {
-            return res.status(403).json({
-                message: "No tiene permisos para realizar esta acción"
-            });
+            return res.status(403).json({ success: false, message: "No tiene permisos para realizar esta acción." });
         }
-        /*
-        if (!permisos.includes(requiredPermission)) {
-            return res.status(403).json({
-                message: "No tiene permisos para realizar esta acción"
-            });
-        }*/
-        next();
+        return next();
     };
 };
 

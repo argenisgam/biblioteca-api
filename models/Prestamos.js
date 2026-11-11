@@ -18,7 +18,8 @@ allowNull: false
 },
 fecha_prestamo: {
 type: DataTypes.DATEONLY,
-allowNull: false
+allowNull: false,
+defaultValue: DataTypes.NOW
 },
 fecha_devolucion: {
 type: DataTypes.DATEONLY

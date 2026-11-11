@@ -3,37 +3,17 @@ const BusinessError = require("../errors/BusinessError");
 const SystemError = require("../errors/SystemError");
 
 const handleError = (err, req, res, next) => {
+  if (res.headersSent) return next(err);
 
-  if (err instanceof BusinessError) {
+  const statusCode = err instanceof BusinessError || err instanceof SystemError
+    ? err.statusCode
+    : err.statusCode >= 400 && err.statusCode < 500 ? err.statusCode : 500;
+  const message = statusCode < 500 ? err.message : "Error interno del servidor";
 
-    logger.warn(err.message);
+  if (statusCode < 500) logger.warn(err.message);
+  else logger.error(err);
 
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
-
-  }
-
-  if (err instanceof SystemError) {
-
-    logger.error(err.message);
-
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
-
-  }
-
-
-  logger.error(err.message);
-
-  return res.status(500).json({
-    success: false,
-    message: "Error interno del servidor",
-  });
-
+  return res.status(statusCode).json({ success: false, message });
 };
 
 module.exports = handleError;
